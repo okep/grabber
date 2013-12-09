@@ -11,6 +11,8 @@
 	<name>Grabber core App Build</name>
 	<packaging>pom</packaging>
 	<modules>
-		<module>grabber</module>
+        <module>grabber.parent</module>
+        <module>grabber.registry</module>
+        <module>grabber</module>
 	</modules>
 </project>
