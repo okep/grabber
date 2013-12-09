@@ -7,12 +7,7 @@
         http://www.eclipse.org/gemini/blueprint/schema/blueprint
         http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
 
-<osgi:service interface="org.okep.grabber.registry.Registry" ref="registry"/>
+    <bean>
 
-<bean id="registry" class="org.okep.grabber.registry.internal.RegistryImpl">
-    <property name="grabbers">
-        <osgi:set cardinality="0..N" interface="org.okep.grabber.registry.Grabber" />
-    </property>
-</bean>
-
+    </bean>
 </beans>

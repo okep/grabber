@@ -1,8 +1,6 @@
-Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.okep.grabber.registry
 Bundle-Name: Grabber Registry
-Bundle-SymbolicName: grabber.registry
 Bundle-Vendor: Okep
-Bundle-Version: 1.0.0
-Excluded-Exports:
- org.okep.grabber.registry.internal
+Excluded-Exports: *.internal
+

@@ -1,0 +1,5 @@
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.okep.grabber.bitstamp
+Bundle-Name: Bitstamp grabber
+Bundle-Vendor: Okep
+Excluded-Exports: *.internal

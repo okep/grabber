@@ -7,10 +7,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.okep</groupId>
 	<artifactId>grabber-top-level</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>Grabber core App Build</name>
 	<packaging>pom</packaging>
 	<modules>
+        <module>grabber.restclient</module>
         <module>grabber.parent</module>
         <module>grabber.registry</module>
         <module>grabber</module>

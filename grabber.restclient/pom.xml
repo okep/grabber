@@ -12,8 +12,8 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>grabber.registry</artifactId>
-    <name>The place where all the grabbers register.</name>
+    <artifactId>grabber.restclinety</artifactId>
+    <name>Grabber restfull client</name>
     <packaging>jar</packaging>
     <version>0.0.1</version>
 

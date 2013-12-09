@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project
-        xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.okep</groupId>
         <artifactId>grabber.parent</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.0.1</version>
         <relativePath>../grabber.parent</relativePath>
     </parent>
 
@@ -16,8 +15,14 @@
     <name>grabber.par</name>
     <description>Grabber PAR</description>
     <packaging>par</packaging>
+    <version>0.0.1</version>
 
     <dependencies>
+        <dependency>
+            <groupId>org.okep</groupId>
+            <artifactId>grabber.registry</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>com.springsource.freemarker</artifactId>
