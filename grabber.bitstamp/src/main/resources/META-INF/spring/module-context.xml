@@ -5,4 +5,6 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
        xmlns:context="http://www.springframework.org/schema/context">
 
+    <bean id="bitStampGrabber" class="org.okep.brabber.bitstamp.BitStampGrabber"/>
+
 </beans>
