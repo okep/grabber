@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plan name="grabber.plan" version="0.0.1" scoped="false" atomic="true"
+      xmlns="http://www.eclipse.org/virgo/schema/plan"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="
+		        http://www.eclipse.org/virgo/schema/plan
+		        http://www.eclipse.org/virgo/schema/plan/eclipse-virgo-plan.xsd">
+
+<!--
+    <artifact type="configuration" name="grabber" version="0.0.1"/>
+-->
+
+    <artifact type="bundle" name="org.okep.grabber.registry" version="0.0.1"/>
+    <artifact type="bundle" name="org.okep.grabber.restclinet" version="0.0.1"/>
+    <artifact type="bundle" name="org.okep.grabber.scheduler" version="0.0.1"/>
+
+</plan>

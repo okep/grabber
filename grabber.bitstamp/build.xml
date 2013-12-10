@@ -1,0 +1,43 @@
+<project name="bitstamp" default="build.bitstamp" basedir=".">
+
+    <target name="clean.bitstamp" description="Clean bitstamp">
+
+        <property environment="env" />
+        <path id="classpath">
+            <fileset dir="${env.M2_HOME}/boot/">
+                <include name="plexus-classworlds-*.jar" />
+            </fileset>
+        </path>
+        <property name="mvn.mainclass" value="org.codehaus.plexus.classworlds.launcher.Launcher" />
+
+        <java classname="${mvn.mainclass}" classpathref="classpath" fork="true" failonerror="true">
+            <jvmarg value="-Dclassworlds.conf=${env.M2_HOME}/bin/m2.conf" />
+            <jvmarg value="-Dmaven.home=${env.M2_HOME}" />
+            <arg value="clean" />
+        </java>
+    </target>
+
+    <target name="make.bitstamp" description="Build bitstamp" depends="clean.bitstamp">
+        <property environment="env" />
+        <path id="classpath">
+            <fileset dir="${env.M2_HOME}/boot/">
+                <include name="plexus-classworlds-*.jar" />
+            </fileset>
+        </path>
+        <property name="mvn.mainclass" value="org.codehaus.plexus.classworlds.launcher.Launcher" />
+
+        <java classname="${mvn.mainclass}" classpathref="classpath" fork="true" failonerror="true">
+            <jvmarg value="-Dclassworlds.conf=${env.M2_HOME}/bin/m2.conf" />
+            <jvmarg value="-Dmaven.home=${env.M2_HOME}" />
+            <arg value="install" />
+        </java>
+    </target>
+
+    <target name="install.bitstamp">
+        <property environment="env" />
+        <copy todir="${env.VIRGO_SERVER_HOME}/pickup" file="target/bitstamp-0.0.1.jar"/>
+    </target>
+
+    <target name="build.bitstamp" depends="make.bitstamp, install.bitstamp"/>
+
+</project>

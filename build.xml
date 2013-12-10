@@ -1,0 +1,55 @@
+<project name="grabber" default="build.grabber" basedir=".">
+
+    <target name="clean.grabber" description="Maven clean">
+
+        <property environment="env" />
+        <path id="classpath">
+            <fileset dir="${env.M2_HOME}/boot/">
+                <include name="plexus-classworlds-*.jar" />
+            </fileset>
+        </path>
+        <property name="mvn.mainclass" value="org.codehaus.plexus.classworlds.launcher.Launcher" />
+
+        <java classname="${mvn.mainclass}" classpathref="classpath" fork="true" failonerror="true">
+            <jvmarg value="-Dclassworlds.conf=${env.M2_HOME}/bin/m2.conf" />
+            <jvmarg value="-Dmaven.home=${env.M2_HOME}" />
+            <arg value="clean" />
+        </java>
+    </target>
+
+    <target name="make.grabber" description="Build grabber plan" depends="clean.grabber">
+        <property environment="env" />
+        <path id="classpath">
+            <fileset dir="${env.M2_HOME}/boot/">
+                <include name="plexus-classworlds-*.jar" />
+            </fileset>
+        </path>
+        <property name="mvn.mainclass" value="org.codehaus.plexus.classworlds.launcher.Launcher" />
+
+        <java classname="${mvn.mainclass}" classpathref="classpath" fork="true" failonerror="true">
+            <jvmarg value="-Dclassworlds.conf=${env.M2_HOME}/bin/m2.conf" />
+            <jvmarg value="-Dmaven.home=${env.M2_HOME}" />
+            <arg value="install" />
+        </java>
+    </target>
+
+    <target name="install.provided">
+        <property environment="env" />
+        <delete>
+            <fileset dir="${env.VIRGO_SERVER_HOME}/repository/usr" includes="**/*"/>
+        </delete>
+        <copy todir="${env.VIRGO_SERVER_HOME}/repository/usr">
+            <fileset dir="grabber/target/provided"/>
+        </copy>
+    </target>
+
+    <target name="install.plan">
+        <property environment="env" />
+        <copy file="./grabber/grabber.plan" todir="${env.VIRGO_SERVER_HOME}/pickup" overwrite="true"/>
+    </target>
+
+    <target name="install.grabber" depends="install.plan, install.provided"/>
+
+    <target name="build.grabber" depends="make.grabber, install.grabber"/>
+</project>
+
