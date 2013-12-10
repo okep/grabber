@@ -1,0 +1,6 @@
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.okep.grabber.scheduler
+Bundle-Name: Grabber Scheduler
+Bundle-Vendor: Okep
+Import-Package: org.springframework.scheduling,org.springframework.scheduling.concurrent
+Excluded-Exports: *.internal

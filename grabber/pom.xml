@@ -18,16 +18,29 @@
     <version>0.0.1</version>
 
     <dependencies>
+<!--
         <dependency>
             <groupId>org.okep</groupId>
             <artifactId>grabber.registry</artifactId>
             <version>${project.version}</version>
         </dependency>
+-->
         <dependency>
-            <groupId>org.freemarker</groupId>
-            <artifactId>com.springsource.freemarker</artifactId>
-            <scope>provided</scope>
+            <groupId>org.okep</groupId>
+            <artifactId>grabber.scheduler</artifactId>
+            <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.okep</groupId>
+            <artifactId>grabber.restclinet</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.spring-library</artifactId>
+            <type>libd</type>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -46,7 +59,7 @@
                 <configuration>
                     <outputDirectory>${project.build.directory}/par-provided</outputDirectory>
                     <overWriteIfNewer>true</overWriteIfNewer>
-                    <excludeGroupIds>org.eclipse.virgo,org.apache.log4j</excludeGroupIds>
+                    <excludeGroupIds>org.okep, org.eclipse.virgo,org.apache.log4j</excludeGroupIds>
                 </configuration>
                 <executions>
                     <execution>
