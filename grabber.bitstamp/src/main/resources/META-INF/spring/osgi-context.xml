@@ -10,6 +10,6 @@
     <osgi:service interface="org.okep.grabber.registry.Grabber" ref="bitStampGrabber">
         <osgi:registration-listener ref="bitStampGrabber"
                 registration-method="serviceRegistered"
-                unregistration-method="serviceUnregistered"/>
+                unregistration-method="serviceUnregisterd"/>
     </osgi:service>
 </beans>

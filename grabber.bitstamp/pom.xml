@@ -12,9 +12,17 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.spring-library</artifactId>
+            <version>3.1.0.RELEASE</version>
+            <type>libd</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.okep</groupId>
             <artifactId>grabber.registry</artifactId>
             <version>0.0.1</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

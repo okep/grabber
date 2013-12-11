@@ -2,20 +2,35 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:osgi-compendium="http://www.springframework.org/schema/osgi-compendium"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.eclipse.org/gemini/blueprint/schema/blueprint
-        http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
+        http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/osgi-compendium http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium-1.2.xsd">
 
-    <osgi:service interface="org.okep.grabber.registry.Registry" ref="registry"/>
+    <context:property-placeholder properties-ref="configProperties"/>
+    <osgi-compendium:cm-properties id="configProperties" persistent-id="grabber-configuration"/>
+
+    <osgi:service interface="org.okep.grabber.registry.Registry" ref="registry">
+        <osgi:registration-listener ref="registry"
+                                    registration-method="serviceRegistered"
+                                    unregistration-method="serviceUnregisterd"/>
+        <osgi:service-properties>
+            <entry key="registry.monitoring.period" value="${registry.monitoring.period}"/>
+        </osgi:service-properties>
+    </osgi:service>
 
     <bean id="registry" class="org.okep.grabber.registry.internal.RegistryImpl">
         <property name="grabbers">
-            <osgi:set cardinality="0..N" interface="org.okep.grabber.registry.Grabber" />
+            <osgi:set cardinality="0..N" interface="org.okep.grabber.registry.Grabber"/>
         </property>
         <property name="taskScheduler">
-            <osgi:reference interface="org.springframework.scheduling.TaskScheduler" bean-name="scheduler" cardinality="1..1"/>
+            <osgi:reference interface="org.springframework.scheduling.TaskScheduler" bean-name="scheduler"
+                            cardinality="1..1"/>
         </property>
+
     </bean>
 
 
