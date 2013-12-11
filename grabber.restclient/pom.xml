@@ -18,13 +18,13 @@
     <version>0.0.1</version>
 
     <dependencies>
-<!--
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.spring-library</artifactId>
-            <type>libd</type>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>com.springsource.org.apache.httpcomponents.httpclient</artifactId>
+            <version>4.2.1</version>
+            <scope>provided</scope>
         </dependency>
--->
+
         <dependency>
             <groupId>org.junit</groupId>
             <artifactId>com.springsource.org.junit</artifactId>

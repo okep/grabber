@@ -5,6 +5,4 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
        xmlns:context="http://www.springframework.org/schema/context">
 
-    <bean id="restClient" class="org.okep.grabber.restclient.internal.RestClientImpl"/>
-
 </beans>

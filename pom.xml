@@ -11,6 +11,7 @@
 	<name>Grabber core App Build</name>
 	<packaging>pom</packaging>
 	<modules>
+        <module>grabber.persistence</module>
         <module>grabber.scheduler</module>
         <module>grabber.restclient</module>
         <module>grabber.parent</module>

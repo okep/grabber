@@ -1,0 +1,6 @@
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.okep.grabber.persistence
+Bundle-Name: Grabber Registry
+Bundle-Vendor: Okep
+Excluded-Exports: *.internal
+

@@ -14,13 +14,19 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.spring-library</artifactId>
-            <version>3.1.0.RELEASE</version>
+            <version>3.1.1.RELEASE</version>
             <type>libd</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.okep</groupId>
             <artifactId>grabber.registry</artifactId>
+            <version>0.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.okep</groupId>
+            <artifactId>grabber.restclient</artifactId>
             <version>0.0.1</version>
             <scope>provided</scope>
         </dependency>
@@ -40,6 +46,12 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.5</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.mongodb</artifactId>
+            <version>2.3_3</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

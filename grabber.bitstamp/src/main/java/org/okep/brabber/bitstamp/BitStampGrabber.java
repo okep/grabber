@@ -1,7 +1,10 @@
 package org.okep.brabber.bitstamp;
 
+import com.mongodb.DB;
+import com.mongodb.Mongo;
 import org.okep.grabber.registry.Grabber;
 import org.okep.grabber.registry.GrabberStatistics;
+import org.okep.grabber.restclient.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
@@ -20,12 +23,15 @@ public class BitStampGrabber implements Grabber, Runnable {
 
     private TaskScheduler taskScheduler;
 
+    private Mongo mongo;
+    private DB bitStampDb;
+
     private BitStampStatistics statistics;
+    private RestClient restClient;
 
     @Override
     public void run() {
-
-        //To change body of implemented methods use File | Settings | File Templates.
+        System.err.println("sdfasd");
     }
 
     @Override
@@ -37,6 +43,9 @@ public class BitStampGrabber implements Grabber, Runnable {
         log.info(getDisplayName() + " registered");
         statistics = new BitStampStatistics(new Date());
         getTaskScheduler().scheduleAtFixedRate(this, BITSTAMP_REQUESTS_PER_TICK * BITSTAMP_REST_PERIOD);
+
+        // initialize database
+        bitStampDb = mongo.getDB(NAME);
     }
 
     public void serviceUnregisterd(BitStampGrabber grabber, Map properties)  {
@@ -59,6 +68,22 @@ public class BitStampGrabber implements Grabber, Runnable {
 
     public void setTaskScheduler(TaskScheduler taskScheduler) {
         this.taskScheduler = taskScheduler;
+    }
+
+    public Mongo getMongo() {
+        return mongo;
+    }
+
+    public void setMongo(Mongo mongo) {
+        this.mongo = mongo;
+    }
+
+    public RestClient getRestClient() {
+        return restClient;
+    }
+
+    public void setRestClient(RestClient restClient) {
+        this.restClient = restClient;
     }
 
     private class BitStampStatistics extends GrabberStatistics {

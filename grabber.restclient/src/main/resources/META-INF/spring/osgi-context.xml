@@ -7,5 +7,5 @@
         http://www.eclipse.org/gemini/blueprint/schema/blueprint
         http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
 
-
+     <osgi:service interface="org.okep.grabber.restclient.RestClient" ref="restClient"/>
 </beans>

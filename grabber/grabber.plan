@@ -8,6 +8,7 @@
 
     <artifact type="configuration" name="grabber-configuration" version="0"/>
 
+    <artifact type="bundle" name="org.okep.grabber.persistence" version="0.0.1"/>
     <artifact type="bundle" name="org.okep.grabber.scheduler" version="0.0.1"/>
     <artifact type="bundle" name="org.okep.grabber.restclinet" version="0.0.1"/>
     <artifact type="bundle" name="org.okep.grabber.registry" version="0.0.1"/>
