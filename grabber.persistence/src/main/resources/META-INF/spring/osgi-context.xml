@@ -13,7 +13,7 @@
     <bean id="mongoClient" class="org.okep.grabber.persistence.internal.MongoClientImpl"/>
 
     <osgi-compendium:cm-properties id="configProperties" persistent-id="org.okep.grabberconfiguration">
-        <prop key="mongo.host">localhost</prop>
+        <prop key="mongo.host">127.0.0.1</prop>
         <prop key="mongo.port">27017</prop>
         <prop key="mongo.databaseName">grabber</prop>
     </osgi-compendium:cm-properties>

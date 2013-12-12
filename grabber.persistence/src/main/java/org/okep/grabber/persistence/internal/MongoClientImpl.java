@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class MongoClientImpl implements MongoClient {
 
-    private static final String DEFAULT_HOST = "localhost";
+    private static final String DEFAULT_HOST = "127.0.0.1";
     private static final int DEFAULT_PORT = 27017;
     private static final Logger log = LoggerFactory.getLogger(MongoClientImpl.class);
     public static final String MONGO_HOST = "mongo.host";
