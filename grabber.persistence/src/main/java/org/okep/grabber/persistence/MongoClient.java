@@ -1,5 +1,6 @@
 package org.okep.grabber.persistence;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 
@@ -10,4 +11,8 @@ public interface MongoClient {
     DB getDB();
     void open(String host, int port) throws UnknownHostException;
     void close();
+    BasicDBObject parse(String json);
+    BasicDBObject addTime(BasicDBObject object);
+    BasicDBObject parseAndAddTime(String json);
+
 }

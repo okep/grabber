@@ -1,8 +1,10 @@
 package org.okep.grabber.persistence.internal;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
+import com.mongodb.util.JSON;
 import org.okep.grabber.persistence.MongoClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +33,22 @@ public class MongoClientImpl implements MongoClient {
     @Override
     public DB getDB() {
         return mongo.getDB(databaseName);
+    }
+
+    @Override
+    public BasicDBObject parse(String json) {
+        return (BasicDBObject) JSON.parse(json);
+    }
+
+    @Override
+    public BasicDBObject addTime(BasicDBObject object) {
+        object.append("machineTime", Long.toString(System.currentTimeMillis()));
+        return  object;
+    }
+
+    @Override
+    public BasicDBObject parseAndAddTime(String json) {
+        return addTime(parse(json));
     }
 
     public void registration(MongoClient mongoClient, Map properties) {

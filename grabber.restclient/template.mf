@@ -1,5 +1,5 @@
 Bundle-ManifestVersion: 2
-Bundle-SymbolicName: org.okep.grabber.restclinet
+Bundle-SymbolicName: org.okep.grabber.restclient
 Bundle-Name: Grabber Restfull Client
 Bundle-Vendor: Okep
 Excluded-Exports: *.internal

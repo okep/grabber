@@ -1,9 +1,6 @@
 package org.okep.brabber.bitstamp;
 
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.Mongo;
+import com.mongodb.*;
 import com.mongodb.util.JSON;
 import org.bson.BSON;
 import org.bson.BSONObject;
@@ -43,6 +40,7 @@ public class BitStampGrabber implements Grabber, Runnable {
     private RestClient restClient;
     private DBCollection collection;
     private ScheduledFuture scheduledFuture;
+    private int invocationCount = 0;
 
     // todo make it initalizable from configuration
     private String tickerUrl = DEFAULT_TICKER_URL;
@@ -53,11 +51,16 @@ public class BitStampGrabber implements Grabber, Runnable {
     public void run() {
         try {
             String ticker = restClient.doGetJson(tickerUrl);
-            mongoClient.getCollection(TICKER_COLLECTION).insert((DBObject) JSON.parse(ticker));
+            mongoClient.getCollection(TICKER_COLLECTION).insert(mongoClient.parseAndAddTime(ticker));
+
             String orderBook = restClient.doGetJson(orderBookUrl);
-            mongoClient.getCollection(ORDER_BOOK_COLLECTION).insert((DBObject) JSON.parse(orderBook));
+            mongoClient.getCollection(ORDER_BOOK_COLLECTION).insert(mongoClient.parseAndAddTime(orderBook));
+
             String transactions = restClient.doGetJson(orderBookUrl);
-            mongoClient.getCollection(TRANSACTION_COLLECTION).insert((DBObject) JSON.parse(transactions));
+            mongoClient.getCollection(TRANSACTION_COLLECTION).insert((DBObject) mongoClient.parseAndAddTime(transactions));
+            synchronized (this) {
+                invocationCount++;
+            }
         } catch (Throwable e) {
             log.error("Problem in communication with BITSTAMP", e);
         }
@@ -148,7 +151,11 @@ public class BitStampGrabber implements Grabber, Runnable {
 
         @Override
         public String getStringRepresentation() {
-            return getDisplayName() + " started " + getStarted();
+            String ret;
+            synchronized (BitStampGrabber.this) {
+                ret = getDisplayName() + " did " + invocationCount + " iterations sice " + getStarted();
+            }
+            return ret;
         }
     }
 }
