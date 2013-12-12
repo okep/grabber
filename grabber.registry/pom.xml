@@ -22,38 +22,30 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.spring-library</artifactId>
-            <type>libd</type>
-            <version>3.1.0.RELEASE</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.okep</groupId>
-            <artifactId>grabber.registry</artifactId>
-            <version>0.0.1</version>
+            <artifactId>grabber.scheduler</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.5</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl104-over-slf4j</artifactId>
-            <version>1.5.11</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.5</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.junit</groupId>
             <artifactId>com.springsource.org.junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.spring-library</artifactId>
+            <type>libd</type>
         </dependency>
     </dependencies>
 

@@ -10,9 +10,6 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/osgi-compendium http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium-1.2.xsd">
 
-    <context:property-placeholder properties-ref="configProperties"/>
-    <osgi-compendium:cm-properties id="configProperties" persistent-id="grabber-configuration"/>
-
     <osgi:service interface="org.okep.grabber.registry.Registry" ref="registry">
         <osgi:registration-listener ref="registry"
                                     registration-method="serviceRegistered"
@@ -30,8 +27,11 @@
             <osgi:reference interface="org.springframework.scheduling.TaskScheduler" bean-name="scheduler"
                             cardinality="1..1"/>
         </property>
-
     </bean>
 
+    <osgi-compendium:cm-properties id="configProperties" persistent-id="org.okep.grabberconfiguration">
+        <prop key="registry.monitoring.period">10000</prop>
+    </osgi-compendium:cm-properties>
+    <context:property-placeholder properties-ref="configProperties"/>
 
 </beans>

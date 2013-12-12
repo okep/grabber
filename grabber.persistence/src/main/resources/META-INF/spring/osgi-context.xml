@@ -10,15 +10,26 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/osgi-compendium http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium-1.2.xsd">
 
+    <bean id="mongoClient" class="org.okep.grabber.persistence.internal.MongoClientImpl"/>
+
+    <osgi-compendium:cm-properties id="configProperties" persistent-id="org.okep.grabberconfiguration">
+        <prop key="mongo.host">localhost</prop>
+        <prop key="mongo.port">27017</prop>
+        <prop key="mongo.databaseName">grabber</prop>
+    </osgi-compendium:cm-properties>
     <context:property-placeholder properties-ref="configProperties"/>
-    <osgi-compendium:cm-properties id="configProperties" persistent-id="grabber-configuration"/>
 
-    <bean id="mongo" class="com.mongodb.Mongo">
-        <constructor-arg name="host" value="${mongo.host}"/>
-        <constructor-arg name="port" value="${mongo.port}"/>
-    </bean>
+    <osgi:service interface="org.okep.grabber.persistence.MongoClient" ref="mongoClient">
+        <osgi:registration-listener ref="mongoClient"
+                registration-method="registration" unregistration-method="unregistration">
+                </osgi:registration-listener>
 
-    <osgi:service interface="com.mongodb.Mongo" ref="mongo"/>
+        <osgi:service-properties>
+            <entry key="mongo.host" value="${mongo.host}"/>
+            <entry key="mongo.port" value="${mongo.port}"/>
+            <entry key="mongo.databaseName" value="${mongo.databaseName}"/>
+        </osgi:service-properties>
+    </osgi:service>
 
 
 </beans>

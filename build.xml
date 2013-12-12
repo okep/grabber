@@ -35,18 +35,18 @@
 
     <target name="install.provided">
         <property environment="env" />
-        <delete>
+        <delete failonerror="false">
             <fileset dir="${env.VIRGO_SERVER_HOME}/repository/usr" includes="**/*"/>
         </delete>
-        <copy todir="${env.VIRGO_SERVER_HOME}/repository/usr">
+        <copy todir="${env.VIRGO_SERVER_HOME}/repository/usr" failonerror="false">
             <fileset dir="grabber/target/provided"/>
         </copy>
+        <copy file="grabber/org.okep.grabberconfiguration.properties" todir="${env.VIRGO_SERVER_HOME}/repository/usr" overwrite="true" failonerror="false"/>
     </target>
 
     <target name="install.plan">
         <property environment="env" />
-        <copy file="./grabber/grabber-configuration.properties" todir="${env.VIRGO_SERVER_HOME}/pickup" overwrite="true"/>
-        <copy file="./grabber/grabber.plan" todir="${env.VIRGO_SERVER_HOME}/pickup" overwrite="true"/>
+        <copy file="./grabber/grabber.plan" todir="${env.VIRGO_SERVER_HOME}/pickup" overwrite="true" failonerror="false"/>
     </target>
 
     <target name="install.grabber" depends="install.plan, install.provided"/>

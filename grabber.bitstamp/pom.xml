@@ -16,43 +16,49 @@
             <artifactId>org.springframework.spring-library</artifactId>
             <version>3.1.1.RELEASE</version>
             <type>libd</type>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.okep</groupId>
             <artifactId>grabber.registry</artifactId>
             <version>0.0.1</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.okep</groupId>
             <artifactId>grabber.restclient</artifactId>
             <version>0.0.1</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.okep</groupId>
+            <artifactId>grabber.persistence</artifactId>
+            <version>0.0.1</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.7.5</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl104-over-slf4j</artifactId>
             <version>1.5.11</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.5</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.mongodb</artifactId>
             <version>2.3_3</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
@@ -73,6 +79,35 @@
             <url>http://repository.springsource.com/maven/bundles/external</url>
         </pluginRepository>
     </pluginRepositories>
+
+    <repositories>
+        <repository>
+            <id>com.springsource.repository.bundles.snapshot</id>
+            <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Snapshot</name>
+            <url>http://repository.springsource.com/maven/bundles/snapshot</url>
+        </repository>
+        <repository>
+            <id>com.springsource.repository.bundles.release</id>
+            <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
+            <url>http://repository.springsource.com/maven/bundles/release</url>
+        </repository>
+        <repository>
+            <id>com.springsource.repository.bundle.external</id>
+            <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
+            <url>http://repository.springsource.com/maven/bundles/external</url>
+        </repository>
+        <repository>
+            <id>com.springsource.repository.bundle.milestone</id>
+            <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Milestones</name>
+            <url>http://repository.springsource.com/maven/bundles/milestone</url>
+        </repository>
+
+        <repository>
+            <id>com.springsource.repository.libraries.release</id>
+            <name>SpringSource Enterprise Bundle Repository - SpringSource Library Releases</name>
+            <url>http://repository.springsource.com/maven/libraries/release</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>

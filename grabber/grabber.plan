@@ -6,7 +6,7 @@
 		        http://www.eclipse.org/virgo/schema/plan
 		        http://www.eclipse.org/virgo/schema/plan/eclipse-virgo-plan.xsd">
 
-    <artifact type="configuration" name="grabber-configuration" version="0"/>
+    <artifact type="configuration" name="org.okep.grabberconfiguration" version="0"/>
 
     <artifact type="bundle" name="org.okep.grabber.persistence" version="0.0.1"/>
     <artifact type="bundle" name="org.okep.grabber.scheduler" version="0.0.1"/>
