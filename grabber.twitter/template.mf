@@ -1,0 +1,4 @@
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.okep.grabber.twitter
+Bundle-Name: Twitter grabber
+Bundle-Vendor: Okep

@@ -1,0 +1,43 @@
+<project name="twitter" default="build.twitter" basedir=".">
+
+    <target name="clean.twitter" description="Clean twitter">
+
+        <property environment="env" />
+        <path id="classpath">
+            <fileset dir="${env.M2_HOME}/boot/">
+                <include name="plexus-classworlds-*.jar" />
+            </fileset>
+        </path>
+        <property name="mvn.mainclass" value="org.codehaus.plexus.classworlds.launcher.Launcher" />
+
+        <java classname="${mvn.mainclass}" classpathref="classpath" fork="true" failonerror="true">
+            <jvmarg value="-Dclassworlds.conf=${env.M2_HOME}/bin/m2.conf" />
+            <jvmarg value="-Dmaven.home=${env.M2_HOME}" />
+            <arg value="clean" />
+        </java>
+    </target>
+
+    <target name="make.twitter" description="Build twitter" depends="clean.twitter">
+        <property environment="env" />
+        <path id="classpath">
+            <fileset dir="${env.M2_HOME}/boot/">
+                <include name="plexus-classworlds-*.jar" />
+            </fileset>
+        </path>
+        <property name="mvn.mainclass" value="org.codehaus.plexus.classworlds.launcher.Launcher" />
+
+        <java classname="${mvn.mainclass}" classpathref="classpath" fork="true" failonerror="true">
+            <jvmarg value="-Dclassworlds.conf=${env.M2_HOME}/bin/m2.conf" />
+            <jvmarg value="-Dmaven.home=${env.M2_HOME}" />
+            <arg value="install" />
+        </java>
+    </target>
+
+    <target name="install.twitter">
+        <property environment="env" />
+        <copy todir="${env.VIRGO_SERVER_HOME}/pickup" file="target/twitter-0.0.1.jar"/>
+    </target>
+
+    <target name="build.twitter" depends="make.twitter, install.twitter"/>
+
+</project>

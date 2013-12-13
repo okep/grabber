@@ -7,15 +7,9 @@
         http://www.eclipse.org/gemini/blueprint/schema/blueprint
         http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
 
-    <bean id="bitStampGrabber" class="org.okep.grabber.bitstamp.BitStampGrabber">
+    <bean id="bitStampGrabber" class="org.okep.grabber.twitter.TwitterGrabber">
         <property name="mongoClient">
             <osgi:reference bean-name="mongoClient" interface="org.okep.grabber.persistence.MongoClient"/>
-        </property>
-        <property name="taskScheduler">
-            <osgi:reference bean-name="scheduler" interface="org.springframework.scheduling.TaskScheduler"/>
-        </property>
-        <property name="restClient">
-            <osgi:reference bean-name="restClient" interface="org.okep.grabber.restclient.RestClient"/>
         </property>
     </bean>
 

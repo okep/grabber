@@ -2,5 +2,5 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.okep.grabber.bitstamp
 Bundle-Name: Bitstamp grabber
 Bundle-Vendor: Okep
-Excluded-Exports: org.okep.brabber.bitstamp
+Excluded-Exports: org.okep.grabber.bitstamp
 Import-Template: org.okep.grabber.registry

@@ -1,4 +1,4 @@
-package org.okep.brabber.bitstamp;
+package org.okep.grabber.bitstamp;
 
 import com.mongodb.*;
 import com.mongodb.util.JSON;
