@@ -35,7 +35,6 @@ public class BitStampGrabber implements Grabber, Runnable {
 
     private TaskScheduler taskScheduler;
     private MongoClient mongoClient;
-
     private BitStampStatistics statistics;
     private RestClient restClient;
     private DBCollection collection;
