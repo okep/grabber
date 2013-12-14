@@ -8,7 +8,7 @@
     <name>Grabber bundle for grabbing twitter.</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <twitter4j.version>3.0.5</twitter4j.version>
+        <twitter4j.version>3.0.5_1</twitter4j.version>
     </properties>
 
     <dependencies>
@@ -56,16 +56,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.twitter4j</groupId>
-            <artifactId>twitter4j-core</artifactId>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.twitter4j</artifactId>
             <version>${twitter4j.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.twitter4j</groupId>
-            <artifactId>twitter4j-stream</artifactId>
-            <version>${twitter4j.version}</version>
-            <scope>compile</scope>
         </dependency>
 
     </dependencies>

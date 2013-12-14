@@ -25,7 +25,7 @@
                 </osgi:registration-listener>
 
         <osgi:service-properties>
-            <entry key="mongo.host" value="${mongo.host}"/>
+            <entry key="twitter.track" value="${mongo.host}"/>
             <entry key="mongo.port" value="${mongo.port}"/>
             <entry key="mongo.databaseName" value="${mongo.databaseName}"/>
         </osgi:service-properties>

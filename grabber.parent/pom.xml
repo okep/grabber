@@ -13,6 +13,7 @@
     <properties>
         <maven.test.failure.ignore>true</maven.test.failure.ignore>
         <spring.version>3.1.1.RELEASE</spring.version>
+        <twitter4j.version>3.0.5_1</twitter4j.version>
     </properties>
 
     <dependencyManagement>
@@ -92,12 +93,16 @@
                 <groupId>org.apache.servicemix.bundles</groupId>
                 <artifactId>org.apache.servicemix.bundles.mongodb</artifactId>
                 <version>2.3_3</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>com.springsource.org.apache.httpcomponents.httpclient</artifactId>
                 <version>4.2.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.twitter4j</artifactId>
+                <version>${twitter4j.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

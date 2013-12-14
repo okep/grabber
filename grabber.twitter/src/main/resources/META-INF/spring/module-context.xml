@@ -5,5 +5,13 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
        xmlns:context="http://www.springframework.org/schema/context">
 
+    <bean id="twitterGrabber" class="org.okep.grabber.twitter.TwitterGrabber">
+        <property name="mongoStatusListener" ref="mongoStatusListener"/>
+        <property name="consumerKey" value="SthYhcZ47fefCB1ngJfBQ"/>
+        <property name="consumerSecret" value="J4KcwBsBnTffB8T5Ilv2gTHtMjphHbzko2cY9D2btSM"/>
+        <property name="token" value="238153633-95fzuhRsKxEE5vZ60qF1DYF05WxHps5wDZtqXRNP"/>
+        <property name="tokenSecret" value="ghtAyCh1SNSJEOsf9VuGv3XQ31OzxyrUlMzAvumnw"/>
+        <property name="user" value="oldrichkepka"/>
+    </bean>
 
 </beans>
