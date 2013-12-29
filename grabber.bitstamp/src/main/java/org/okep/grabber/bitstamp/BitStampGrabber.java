@@ -27,8 +27,8 @@ public class BitStampGrabber implements Grabber, Runnable {
     private static final long BITSTAMP_REQUESTS_PER_TICK = 3;
 
     private static final String DEFAULT_TICKER_URL = "https://www.bitstamp.net/api/ticker/";
-    private static final String DEFAULT_ORDER_BOOK_URL = "https://www.bitstamp.net/api/order_book/";
-    private static final String DEFAULT_TRANSACTION_URL = "https://www.bitstamp.net/api/transactions/";
+    private static final String DEFAULT_ORDER_BOOK_URL = "https://www.bitstamp.net/api/order_book/?group=0";
+    private static final String DEFAULT_TRANSACTION_URL = "https://www.bitstamp.net/api/transactions/?time=minute";
     public static final String TICKER_COLLECTION = "bitstamp_ticker";
     public static final String ORDER_BOOK_COLLECTION = "bitstamp_orderBook";
     public static final String TRANSACTION_COLLECTION = "bitstamp_transaction";
