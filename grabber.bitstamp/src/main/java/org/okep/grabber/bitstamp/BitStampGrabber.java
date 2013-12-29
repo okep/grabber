@@ -23,7 +23,7 @@ public class BitStampGrabber implements Grabber, Runnable {
 
     private static final String NAME = "BITSTAMP_GRABBER";
     private static final String DISPLAY_NAME = "Bitstamp Grabber";
-    private static final long BITSTAMP_REST_PERIOD = 1200;              // ban period is 1000
+    private static final long BITSTAMP_REST_PERIOD = 5000;              // ban period is 1000
     private static final long BITSTAMP_REQUESTS_PER_TICK = 3;
 
     private static final String DEFAULT_TICKER_URL = "https://www.bitstamp.net/api/ticker/";
@@ -55,7 +55,7 @@ public class BitStampGrabber implements Grabber, Runnable {
             String orderBook = restClient.doGetJson(orderBookUrl);
             mongoClient.getCollection(ORDER_BOOK_COLLECTION).insert(mongoClient.parseAndAddTime(orderBook));
 
-            String transactions = restClient.doGetJson(orderBookUrl);
+            String transactions = restClient.doGetJson(transactionUrl);
             mongoClient.getCollection(TRANSACTION_COLLECTION).insert((DBObject) mongoClient.parseAndAddTime(transactions));
             synchronized (this) {
                 invocationCount++;
