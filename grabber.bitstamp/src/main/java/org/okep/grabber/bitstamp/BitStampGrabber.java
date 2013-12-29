@@ -56,6 +56,8 @@ public class BitStampGrabber implements Grabber, Runnable {
             mongoClient.getCollection(ORDER_BOOK_COLLECTION).insert(mongoClient.parseAndAddTime(orderBook));
 
             String transactions = restClient.doGetJson(transactionUrl);
+            // make object form strasactions
+            transactions = "{ \"transactions\":" + transactions + "}";
             mongoClient.getCollection(TRANSACTION_COLLECTION).insert((DBObject) mongoClient.parseAndAddTime(transactions));
             synchronized (this) {
                 invocationCount++;
