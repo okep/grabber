@@ -17,7 +17,15 @@ var _b = {
     DB_NAME: 'grabber',
     TICKER_RESULT: 'tickerResult',
     TRANSACTION_RESULT: 'transactionResult',
-    DEPTH_RESULT: 'depthResult'
+    DEPTH_RESULT: 'depthResult',
+
+    // types of changes in order book
+    BUY_TRANSACTION:'BUY_TRANSACTION',
+    SELL_TRANSACTION: 'SELL_TRANSACTION',
+    PLACE_BID: 'PLACE_BID',
+    WITHDRAW_BID: 'WITHDRAW_BID',
+    PLACE_ASK: 'PLACE_ASK',
+    WITHDRAW_ASK: 'WITHDRAW_ASK'
 };
 
 initConnection();
@@ -78,6 +86,82 @@ function processTransactionAndDepth() {
     print(counter + ' transactions updated for buy/sell');
 
     // 3. process bids and asks
+    // go through order book between pairs and find transactions between
+    var obCursor = _b.db[_b.ORDER_BOOK].find().sort({timestamp: 1});
+
+    previous = undefined;
+    current = undefined;
+    counter = 0;
+    while(obCursor.hasNext()) {
+        current = normalizeOrderBook(obCursor.next());
+        if(typeof(previous) !== 'undefined') {
+
+        }
+        previous = current;
+    }
+
+
+
+}
+
+function compareBooks(before, after) {
+    var ret = {
+        bids_added: [],
+        bids_removed: [],
+        asks_added: [],
+        asks_removed: []
+    };
+
+
+}
+
+function compareArrays(before, after){
+    var bi = 0;
+    var ai = 0;
+
+    var ret = {
+        added: [],
+        removed: []
+    };
+
+    var b = undefined;
+    var a = undefined;
+
+    while(bi < before.length || ai < after.length) {
+        b = before[bi];
+        a = after[ai];
+
+        if(b.price < a.price) {
+
+        } else if(b.price > a.price) {
+
+        } else {
+
+        }
+
+
+    }
+
+}
+
+
+function normalizeOrderBook(row) {
+    row.timestamp = parseInt(row.timestamp);
+    var bids = [];
+    for(var i = 0; i < row.bids; i++) {
+        var bid = bids[i];
+        bids.push({
+            "price": parseFloat(bid[0]),
+            "amount": parseFloat(bid[1])
+        });
+    }
+    for(i = 0; i < row.asks; i++) {
+        var ask = asks[i];
+        bids.push({
+            "price": parseFloat(ask[0]),
+            "amount": parseFloat(ask[1])
+        });
+    }
 }
 
 function normalizeTransaction(row) {
@@ -205,7 +289,7 @@ function findTransactionsInInterval(t1, t2) {
             {timestamp: {$gte: t1}},
             {timestamp: {$lt : t2}}
         ]
-    });
+    }).sort({tid: 1});
     var ret = [];
 
     while(cursor.hasNext()) {
