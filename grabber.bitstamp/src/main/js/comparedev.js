@@ -22815,7 +22815,7 @@ var transactions = [
 
 ];
 
-doTest();
+doTest();                                                                         3
 
 function doTest() {
     var ts = decomposeTransactions(transactions);
@@ -22834,9 +22834,13 @@ function compare(before, after, ts) {
 
     function compareOne(befores, afters, ts) {
         var b = 0, a = 0, i, j;
+        var price;
         var before;
         var after;
         var transaction;
+        var maxAmount;
+        var toCover;
+        var aa, bb;
 
         var ret = {
             "placed": [],
@@ -22865,32 +22869,92 @@ function compare(before, after, ts) {
 
             if(before.price < after.price) {
                 // something disapeared from before (transaction and/or withdrawal)
-                transaction = tOnPrice(before.price);
+                price = before.price;
+                transaction = tOnPrice(price);
                 // can be transaction applied ? (is the amount less than disapeared?)
-                var maxAmount = maxTAmount(transaction);
+                maxAmount = maxTAmount(transaction);
 
                 if(maxAmount > 0) {
                     // there was a transaction (here comes heuristic)
-                    // todo
-
+                    // we assume that the oldest bids are used first
+                    // 1. apply the transaction
+                    toCover = maxAmount;
+                    for(i = before.amount.length-1; i >= 0; i--) { // we go in reverese order as the oldes are at the end
+                        var amt = before.amount[i];
+                        if(amt <= toCover) {
+                            toCover -= amt;
+                        } else {
+                            ret.withdrawals.push({
+                                "price": price,
+                                "amount": amt - toCover
+                            });
+                            toCover = 0;
+                        }
+                    }
+                    if(toCover > 0) {
+                        // there is still something to cover, there must have been placement
+                        ret.placed.push({
+                            "price": price,
+                            "amount": toCover
+                        });
+                        toCover = 0;
+                    }
                 } else {
                     // all was withdrawal there was not any transaction
                     for(i = 0; i < before.amount.length; i++) {
                         ret.withdrawals.push({
-                            "price": before.price,
+                            "price": price,
                             "amount": before.amount[i]
                         });
                     }
                 }
-
-
-
-
                 b++;
             } else if(before.price > after.price) {
-
+                // something appeared
+                price = after.price;
+                transaction = tOnPrice(price);
+                maxAmount = maxTAmount(transaction);
+                // everything was placed
+                for(i = 0; i < after.amount.length; i++) {
+                    ret.placed.push({
+                            "price": price,
+                            "amount": after.amount[i]
+                        }
+                    );
+                }
+                if(maxAmount > 0) {
+                    // there was placed something more to cover transaction
+                    ret.placed.push({               // may be there was more, but we know that there was at least one
+                            "price": price,
+                            "amount": maxAmount
+                        }
+                    );
+                }
                 a++;
             } else {
+                // the most difficult
+                price = after.price;
+                i = before.amount.length - 1;
+                j = after.amount.length - 1;
+
+                transaction = tOnPrice(price);
+
+                while(i >= 0 || j >= 0) {
+                    if(i >= 0 && j >= 0) {
+                        if(aa > bb) {
+
+                        } else if(bb > aa) {
+                            // could be transaction
+
+                        } else {
+                            // aa == bb -> noting happened
+                            i--; j--;
+                        }
+                    } else {
+                        // we are at the end of one / both sides.
+                    }
+                }
+
                 a++;b++;
             }
         }
