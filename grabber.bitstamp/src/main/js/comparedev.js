@@ -24757,14 +24757,14 @@ var transactions = [
 
 ];
 
-doTest();                                                                         3
+doTest();
 
 function doTest() {
     var ts = decomposeTransactions(transactions);
-    var d3 = decomposeOrderBook(d3);
-    var d4 = decomposeOrderBook(d4);
+    var dd3 = decomposeOrderBook(d3);
+    var dd4 = decomposeOrderBook(d4);
 
-    var result = compare(d3, d4, ts);
+    var result = compare(dd3, dd4, ts);
 }
 
 function compare(before, after, ts) {
@@ -24772,11 +24772,11 @@ function compare(before, after, ts) {
         return;
     }
 
-    var bidComp = compareOne(before.bids, after.bids, ts.sell);
-    var askComp = compareOne(before.asks, after.asks, ts.buy);
     var price;
     var aux;
     var j;
+    var bidComp = compareOne(before.bids, after.bids, ts.sell);
+    var askComp = compareOne(before.asks, after.asks, ts.buy);
     // add transactions
     for(var i = 0; i < ts.length; i++) {
 
@@ -24809,6 +24809,9 @@ function compare(before, after, ts) {
                 bidComp.transactions.push(aux);
             }
         }
+
+        // merge results todo
+        print('fasf');
     }
 
 
@@ -24822,14 +24825,13 @@ function compare(before, after, ts) {
    }
 
     function compareOne(befores, afters, ts) {
-        var b = 0, a = 0, i, j;
+        var b = 0, a = 0, i, j, k;
         var price;
         var before;
         var after;
         var transaction;
         var maxAmount;
         var toCover;
-        var aa, bb;
         var reminder;
 
         var ret = {
@@ -24931,28 +24933,70 @@ function compare(before, after, ts) {
                             toCover = 0;
                         } else {
                             toCover -= before.amount[i];
+                            if(toCover == 0 && i > 0) {
+                                reminder = before.amount[--i];
+                            }
                         }
                         i--;
                     }
-                } else {
-                    if(toCover > 0) {
+                }
+                if(toCover > 0) {
                         // there had to be put
                         ret.placed.push({
                             "price": price,
                             "amount": toCover
                         });
                         toCover = 0;
-                        // and all on the after side were placed, todo
+                        while(j >= 0) {
+                            ret.placed.push({
+                                "price": price,
+                                "amount": after.amount[j]
+                            });
+                        }
 
-                    } else if(i >= 0 && reminder) {
+                } else {
 
+                    while(reminder > 0) {
+                        k = j;
+                        while(k > 0) {
+                            if(after.amount[k] == reminder) {
+                                for(; j > k; j--) {
+                                    ret.placed.push({
+                                        "price": price,
+                                        "amount": after.amount[j]
+                                    });
+                                }
+                                j--;
+                                i--;
 
+                            }
+                            k--;
+                        }
+
+                        if(i >= 0) {
+                            reminder = before.amount[i];
+                            if(j < 0) {
+                                for(;i>=0; i--) {
+                                    ret.withdrawals.push({
+                                        "price": price,
+                                        "amount": before[i].amount
+                                    });
+                                }
+                                reminder = 0;
+                            }
+                        } else {
+                            // all remining after are placed
+                            for(;j>=0; j--) {
+                                ret.placed.push({
+                                    "price": price,
+                                    "amout": after[j].amount
+                                });
+                            }
+                            reminder = 0;
+                        }
                     }
 
-
                 }
-
-
                 a++;b++;
             }
         }
@@ -25049,7 +25093,7 @@ function decomposeOrderBook(depth) {
             if (price === lastPrice) {
                 // entry already exists
                 if(reverse) {
-
+                    newEntry.amount.unshift(amount);
                 } else {
                     newEntry.amount.push(amount);
                 }
@@ -25058,7 +25102,11 @@ function decomposeOrderBook(depth) {
                     "price": price,
                     "amount": [amount]
                 };
-                array.push(newEntry);
+                if(reverse) {
+                    array.unshift(newEntry);
+                } else {
+                    array.push(newEntry);
+                }
             }
             lastPrice = price;
         }

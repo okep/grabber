@@ -40,4 +40,12 @@
 
     <target name="build.bitstamp" depends="make.bitstamp, install.bitstamp"/>
 
+
+    <target name="exec.test">
+        <property name="MONGO_BIN" value="/usr/bin/mongo"/>
+        <exec executable="${MONGO_BIN}">
+            <arg value="src/main/js/test.js"/>
+        </exec>
+    </target>
+
 </project>
