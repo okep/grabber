@@ -43,6 +43,7 @@ function processTransactionAndDepth() {
     _b.db[transactionResultName].ensureIndex({ tid: 1}, {unique: true});
 
     var depthResultName = createCollection(_b.DEPTH_RESULT);
+    _b.db[depthResultName].ensureIndex({ timestamp: 1});
 
     var depth = undefined;          // current depth
 
@@ -86,22 +87,28 @@ function processTransactionAndDepth() {
     print(counter + ' transactions updated for buy/sell');
 
     // 3. process bids and asks
-    // go through order book between pairs and find transactions between
+
     var obCursor = _b.db[_b.ORDER_BOOK].find().sort({timestamp: 1});
 
     previous = undefined;
     current = undefined;
     counter = 0;
     while(obCursor.hasNext()) {
-        current = normalizeOrderBook(obCursor.next());
+        current = obCursor.next();
         if(typeof(previous) !== 'undefined') {
-
+            transactions = findTransactionsInInterval(previous.timestamp, current.timestamp);
+            var com = compare(decomposeOrderBook(previous), decomposeOrderBook(current), decomposeTransactions(transactions));
+            if(com) {
+                for(i = 0; i < com.length; i++) {
+                    _b.db[depthResultName].insert(com[i]);
+                    counter++;
+                }
+            }
         }
         previous = current;
     }
 
-
-
+    print(counter + ' oreder book operations');
 }
 
 function compareBooks(before, after) {
@@ -142,26 +149,6 @@ function compareArrays(before, after){
 
     }
 
-}
-
-
-function normalizeOrderBook(row) {
-    row.timestamp = parseInt(row.timestamp);
-    var bids = [];
-    for(var i = 0; i < row.bids; i++) {
-        var bid = bids[i];
-        bids.push({
-            "price": parseFloat(bid[0]),
-            "amount": parseFloat(bid[1])
-        });
-    }
-    for(i = 0; i < row.asks; i++) {
-        var ask = asks[i];
-        bids.push({
-            "price": parseFloat(ask[0]),
-            "amount": parseFloat(ask[1])
-        });
-    }
 }
 
 function normalizeTransaction(row) {
@@ -304,4 +291,456 @@ function saveTransaction(transaction) {
 
 function getCollectionName(name) {
     return _b.prefix + '_' + name;
+}
+
+
+// ORDER BOOK COMPARISON ALGORITHM
+function compare(before, after, ts) {
+    if(before.timestamp == after.timestamp) {
+        return;
+    }
+
+    var price;
+    var aux;
+    var j;
+
+    var bidComp = compareOne(before.bids, after.bids, ts.sell);
+    var askComp = compareOne(before.asks, after.asks, ts.buy);
+    // add transactions
+
+    for(i = 0; i < ts.sell.length; i++) {
+        processTransaction(ts.sell[i], false);
+    }
+    for(i = 0; i < ts.buy.length; i++) {
+        processTransaction(ts.buy[i], true);
+    }
+
+    var ret = [];
+
+    for(j = 0; j < bidComp.placed.length; j++) {
+        ret.push({
+            "timestamp": after.timestamp,
+            "operation": _b.PLACE_BID,
+            "price": bidComp.placed[j].price,
+            "amount": bidComp.placed[j].amount
+
+        });
+    }
+
+    for(j = 0; j < bidComp.withdrawals.length; j++) {
+        ret.push({
+            "timestamp": after.timestamp,
+            "operation": _b.WITHDRAW_BID,
+            "price": bidComp.withdrawals[j].price,
+            "amount": bidComp.withdrawals[j].amount
+
+        });
+    }
+
+    for(j = 0; j < bidComp.transactions.length; j++) {
+        ret.push({
+            "timestamp": after.timestamp,
+            "operation": _b.SELL_TRANSACTION,
+            "price": bidComp.transactions[j].price,
+            "amount": bidComp.transactions[j].amount
+
+        });
+    }
+
+    for(j = 0; j < askComp.placed.length; j++) {
+        ret.push({
+            "timestamp": after.timestamp,
+            "operation": _b.PLACE_ASK,
+            "price": askComp.placed[j].price,
+            "amount": askComp.placed[j].amount
+
+        });
+    }
+
+    for(j = 0; j < askComp.withdrawals.length; j++) {
+        ret.push({
+            "timestamp": after.timestamp,
+            "operation": _b.WITHDRAW_ASK,
+            "price": askComp.withdrawals[j].price,
+            "amount": askComp.withdrawals[j].amount
+
+        });
+    }
+
+    for(j = 0; j < askComp.transactions.length; j++) {
+        ret.push({
+            "timestamp": after.timestamp,
+            "operation": _b.BUY_TRANSACTION,
+            "price": askComp.transactions[j].price,
+            "amount": askComp.transactions[j].amount
+        });
+    }
+
+    return ret;
+
+    function processTransaction(transaction, buy) {
+        price = transaction.price;
+        var j;
+        var aux;
+        // check if the transaction is in before or after, if not add placement
+        if (!findPrice(price, before.bids) && !findPrice(price, before.asks) &&
+            !findPrice(price, after.bids) && findPrice(price, after.asks)) {
+            // there must have been placement for transaction we don't see
+            for (j = 0; j < transaction.realamount.length; j++) {
+                aux = {
+                    "price": price,
+                    "amount": transaction.realamount[j]
+                };
+                if (buy) {
+                    askComp.placed.push(aux);
+                } else {
+                    bidComp.placed.push(aux);
+                }
+            }
+        }
+
+        for (j = 0; j < transaction.realamount.length; j++) {
+            aux = {
+                "price": price,
+                "amount": transaction.realamount[j]
+            };
+            if (buy) {
+                askComp.transactions.push(aux);
+            } else {
+                bidComp.transactions.push(aux);
+            }
+        }
+    }
+
+    function findPrice(price, array) {
+        for(var i = 0; i < array.length; i++) {
+            if(array[i].price == price) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function compareOne(befores, afters, ts) {
+        var b = 0, a = 0, i, j, k;
+        var price;
+        var before;
+        var after;
+        var transaction;
+        var maxAmount;
+        var toCover;
+        var reminder;
+        var found;
+
+        var ret = {
+            "placed": [],
+            "transactions": [],
+            "withdrawals": []
+        };
+
+
+        // now withdrawals and place
+        while(b < befores.length || a < afters.length) {
+            if(b < befores.length) {
+                before = befores[b];
+            } else {
+                before = {
+                    "price": 0,
+                    "amount": []
+                }
+            }
+            if(a < afters.length) {
+                after = afters[a];
+            } else {
+                after = {
+                    "price": 0,
+                    "amount": []
+                }
+
+            }
+
+            if(before.price > after.price) {
+                // something disapeared from before (transaction and/or withdrawal)
+                price = before.price;
+                transaction = tOnPrice(price);
+                // can be transaction applied ? (is the amount less than disapeared?)
+                maxAmount = maxTAmount(transaction);
+
+                if(maxAmount > 0) {
+                    // there was a transaction (here comes heuristic)
+                    // we assume that the oldest bids are used first
+                    // 1. apply the transaction
+                    toCover = maxAmount;
+                    for(i = before.amount.length-1; i >= 0; i--) { // we go in reverese order as the oldes are at the end
+                        var amt = before.amount[i];
+                        if(amt <= toCover) {
+                            toCover -= amt;
+                        } else {
+                            ret.withdrawals.push({
+                                "price": price,
+                                "amount": amt - toCover
+                            });
+                            toCover = 0;
+                        }
+                    }
+                    if(toCover > 0) {
+                        // there is still something to cover, there must have been placement
+                        ret.placed.push({
+                            "price": price,
+                            "amount": toCover
+                        });
+                        toCover = 0;
+                    }
+                } else {
+                    // all was withdrawal there was not any transaction
+                    for(i = 0; i < before.amount.length; i++) {
+                        ret.withdrawals.push({
+                            "price": price,
+                            "amount": before.amount[i]
+                        });
+                    }
+                }
+                b++;
+            } else if(before.price < after.price) {
+                // something appeared
+                price = after.price;
+                transaction = tOnPrice(price);
+                maxAmount = maxTAmount(transaction);
+                // everything was placed
+                for(i = 0; i < after.amount.length; i++) {
+                    ret.placed.push({
+                            "price": price,
+                            "amount": after.amount[i]
+                        }
+                    );
+                }
+                if(maxAmount > 0) {
+                    // there was placed something more to cover transaction
+                    ret.placed.push({               // may be there was more, but we know that there was at least one
+                            "price": price,
+                            "amount": maxAmount
+                        }
+                    );
+                }
+                a++;
+            } else {
+                // the most difficult
+                price = after.price;
+                i = before.amount.length - 1;
+                j = after.amount.length - 1;
+
+                transaction = tOnPrice(price);
+                maxAmount = maxTAmount(transaction);
+
+                toCover = maxAmount;
+                reminder = 0;
+
+                if(toCover > 0) {
+                    while(i >= 0 && toCover > 0) {
+                        if(toCover < before.amount[i]) {
+                            reminder = before.amount[i] - toCover;
+                            toCover = 0;
+                        } else {
+                            toCover -= before.amount[i];
+                            i--;
+                            if(toCover == 0 && i > 0) {
+                                reminder = before.amount[i];
+                            }
+                        }
+                    }
+                } else {
+                    reminder = before.amount[i];
+                }
+                if(toCover > 0) {
+                    // there had to be put
+                    ret.placed.push({
+                        "price": price,
+                        "amount": toCover
+                    });
+                    toCover = 0;
+                    while(j >= 0) {
+                        ret.placed.push({
+                            "price": price,
+                            "amount": after.amount[j]
+                        });
+                    }
+
+                } else {
+                    // find where is reminder on right side
+                    while(reminder > 0) {
+                        k = j;
+                        found = false;
+                        while(k >= 0) {
+                            if(after.amount[k] == reminder) {
+                                found = true;
+                                for(; j > k; j--) {
+                                    ret.placed.push({
+                                        "price": price,
+                                        "amount": after.amount[j]
+                                    });
+                                }
+                                // we found match let move on
+                                j--;
+                                i--;
+                                break;
+
+                            }
+                            k--;
+                        }
+                        if(!found) {
+                            ret.withdrawals.push({
+                                "price": price,
+                                "amount": reminder
+                            });
+                            i--;
+                        }
+
+                        if(i >= 0) {
+                            reminder = before.amount[i];
+                            if(j < 0) {
+                                for(;i>=0; i--) {
+                                    ret.withdrawals.push({
+                                        "price": price,
+                                        "amount": before.amount[i]
+                                    });
+                                }
+                                reminder = 0;
+                            }
+                        } else {
+                            // all remining after are placed
+                            for(;j>=0; j--) {
+                                ret.placed.push({
+                                    "price": price,
+                                    "amount": after.amount[j]
+                                });
+                            }
+                            reminder = 0;
+                        }
+                    }
+
+                }
+                a++;b++;
+            }
+        }
+
+        return ret;
+
+        function maxTAmount(t) {
+            var ret = 0;
+            if(typeof(t) !== 'undefined') {
+                for(var i = 0; i < t.amount.length; i++) {
+                    ret = (ret < t.amount[i]) ? t.amount[i] : ret;
+                }
+            }
+            return ret;
+        }
+
+        function tOnPrice(price) {
+            for(var i = 0; i < ts.length; i++) {
+                var t = ts[i];
+                if(t.price == price) {
+                    return t;
+                }
+            }
+            return undefined;
+        }
+
+    }
+}
+
+
+// number of ts is usually small need not be fast
+function decomposeTransactions(ts) {
+    var buy = [];
+    var sell = [];
+    var i;
+
+    function applyNewTs(trans, array) {
+        var i, j;
+        var applied = false;
+        for(j = 0; j < array.length; j++) {
+            var element = array[j];
+            if(element.price == t.price) {
+                // add permutatin of amount
+                var toAdd = [t.amount];
+                for(i = 0; i < element.amount.length; i++) {
+                    toAdd.push(element.amount[i] + trans.amount);
+                }
+                for(i = 0; i < toAdd.length; i++) {
+                    element.amount.push(toAdd[i]);
+                }
+                element.realamount.push(t.amount);
+                applied = true;
+            }
+        }
+        if(!applied) {
+            array.push({
+                "price": t.price,
+                "amount": [t.amount],
+                "realamount": [t.amount]
+            });
+        }
+    }
+
+    for(i = 0; i < ts.length; i++) {
+        var t = ts[i];
+        if(t.buy) {
+            applyNewTs(t, buy);
+        } else {
+            applyNewTs(t, sell);
+        }
+    }
+
+    return {"buy": buy, "sell": sell};
+}
+
+/**
+ * Does:
+ *    * change strings to floats and ints
+ *    * grouping by same price
+ *    * reverse order of asks to be compatible with bids
+ *
+ * @param depth
+ */
+function decomposeOrderBook(depth) {
+    depth.timestamp = parseInt(depth.timestamp);
+    var bids = [];
+    var asks = [];
+
+    function applyNew(array, bora, reverse) {
+        var newEntry = undefined;
+        var lastPrice = undefined;
+        for (var i = 0; i < bora.length; i++) {
+            var bid = bora[i];
+            var price = parseFloat(bid[0]);
+            var amount = parseFloat(bid[1]);
+            if (price === lastPrice) {
+                // entry already exists
+                if(reverse) {
+                    newEntry.amount.unshift(amount);
+                } else {
+                    newEntry.amount.push(amount);
+                }
+            } else {
+                newEntry = {
+                    "price": price,
+                    "amount": [amount]
+                };
+                if(reverse) {
+                    array.unshift(newEntry);
+                } else {
+                    array.push(newEntry);
+                }
+            }
+            lastPrice = price;
+        }
+    }
+
+    applyNew(bids, depth.bids, false);
+    applyNew(asks, depth.asks, true);
+
+    depth.bids = bids;
+    depth.asks = asks;
+
+    return depth;
 }

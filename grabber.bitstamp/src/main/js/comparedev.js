@@ -24775,22 +24775,36 @@ function compare(before, after, ts) {
     var price;
     var aux;
     var j;
+
     var bidComp = compareOne(before.bids, after.bids, ts.sell);
     var askComp = compareOne(before.asks, after.asks, ts.buy);
     // add transactions
-    for(var i = 0; i < ts.length; i++) {
 
-        price = ts[i].price;
+    for(i = 0; i < ts.sell.length; i++) {
+        processTransaction(ts.sell[i], false);
+    }
+    for(i = 0; i < ts.buy.length; i++) {
+        processTransaction(ts.buy[i], true);
+    }
+
+
+    // merge results todo
+    print('fasf');
+
+    function processTransaction(transaction, buy) {
+        price = transaction.price;
+        var j;
+        var aux;
         // check if the transaction is in before or after, if not add placement
-        if(findPrice(price, before.bids) || findPrice(price, before.asks) ||
-            findPrice(price, after.bids) || findPrice(price, after.asks)){
+        if (!findPrice(price, before.bids) && !findPrice(price, before.asks) &&
+            !findPrice(price, after.bids) && findPrice(price, after.asks)) {
             // there must have been placement for transaction we don't see
-            for(j = 0; j < ts[i].realamount.length; j++) {
+            for (j = 0; j < transaction.realamount.length; j++) {
                 aux = {
                     "price": price,
-                    "amount": ts[i].realamount[j]
+                    "amount": transaction.realamount[j]
                 };
-                if(ts.buy) {
+                if (buy) {
                     askComp.placed.push(aux);
                 } else {
                     bidComp.placed.push(aux);
@@ -24798,22 +24812,18 @@ function compare(before, after, ts) {
             }
         }
 
-        for(j = 0; j < ts[i].realamount.length; j++) {
+        for (j = 0; j < transaction.realamount.length; j++) {
             aux = {
                 "price": price,
-                "amount": ts[i].realamount[j]
+                "amount": transaction.realamount[j]
             };
-            if(ts[i].buy) {
+            if (buy) {
                 askComp.transactions.push(aux);
             } else {
                 bidComp.transactions.push(aux);
             }
         }
-
-        // merge results todo
-        print('fasf');
     }
-
 
     function findPrice(price, array) {
        for(var i = 0; i < array.length; i++) {
@@ -24833,6 +24843,7 @@ function compare(before, after, ts) {
         var maxAmount;
         var toCover;
         var reminder;
+        var found;
 
         var ret = {
             "placed": [],
@@ -24845,12 +24856,23 @@ function compare(before, after, ts) {
         while(b < befores.length || a < afters.length) {
             if(b < befores.length) {
                 before = befores[b];
+            } else {
+                before = {
+                    "price": 0,
+                    "amount": []
+                }
             }
             if(a < afters.length) {
                 after = afters[a];
+            } else {
+                after = {
+                    "price": 0,
+                    "amount": []
+                }
+
             }
 
-            if(before.price < after.price) {
+            if(before.price > after.price) {
                 // something disapeared from before (transaction and/or withdrawal)
                 price = before.price;
                 transaction = tOnPrice(price);
@@ -24892,7 +24914,7 @@ function compare(before, after, ts) {
                     }
                 }
                 b++;
-            } else if(before.price > after.price) {
+            } else if(before.price < after.price) {
                 // something appeared
                 price = after.price;
                 transaction = tOnPrice(price);
@@ -24933,12 +24955,14 @@ function compare(before, after, ts) {
                             toCover = 0;
                         } else {
                             toCover -= before.amount[i];
+                            i--;
                             if(toCover == 0 && i > 0) {
-                                reminder = before.amount[--i];
+                                reminder = before.amount[i];
                             }
                         }
-                        i--;
                     }
+                } else {
+                    reminder = before.amount[i];
                 }
                 if(toCover > 0) {
                         // there had to be put
@@ -24955,22 +24979,33 @@ function compare(before, after, ts) {
                         }
 
                 } else {
-
+                    // find where is reminder on right side
                     while(reminder > 0) {
                         k = j;
-                        while(k > 0) {
+                        found = false;
+                        while(k >= 0) {
                             if(after.amount[k] == reminder) {
+                                found = true;
                                 for(; j > k; j--) {
                                     ret.placed.push({
                                         "price": price,
                                         "amount": after.amount[j]
                                     });
                                 }
+                                // we found match let move on
                                 j--;
                                 i--;
+                                break;
 
                             }
                             k--;
+                        }
+                        if(!found) {
+                            ret.withdrawals.push({
+                                "price": price,
+                                "amount": reminder
+                            });
+                            i--;
                         }
 
                         if(i >= 0) {
@@ -24979,7 +25014,7 @@ function compare(before, after, ts) {
                                 for(;i>=0; i--) {
                                     ret.withdrawals.push({
                                         "price": price,
-                                        "amount": before[i].amount
+                                        "amount": before.amount[i]
                                     });
                                 }
                                 reminder = 0;
@@ -24989,7 +25024,7 @@ function compare(before, after, ts) {
                             for(;j>=0; j--) {
                                 ret.placed.push({
                                     "price": price,
-                                    "amout": after[j].amount
+                                    "amout": after.amount[j]
                                 });
                             }
                             reminder = 0;
@@ -25000,27 +25035,31 @@ function compare(before, after, ts) {
                 a++;b++;
             }
         }
-    }
 
-    function maxTAmount(t) {
-        var ret = 0;
-        if(typeof(t) !== 'undefined') {
-            for(var i = 0; i < t.amount.length; i++) {
-                ret = (ret < t.amount[i]) ? t.amount[i] : ret;
-            }
-        }
         return ret;
+
+        function maxTAmount(t) {
+            var ret = 0;
+            if(typeof(t) !== 'undefined') {
+                for(var i = 0; i < t.amount.length; i++) {
+                    ret = (ret < t.amount[i]) ? t.amount[i] : ret;
+                }
+            }
+            return ret;
+        }
+
+        function tOnPrice(price) {
+            for(var i = 0; i < ts.length; i++) {
+                var t = ts[i];
+                if(t.price == price) {
+                    return t;
+                }
+            }
+            return undefined;
+        }
+
     }
 
-    function tOnPrice(price) {
-        for(var i = 0; i < ts.length; i++) {
-            var t = ts[i];
-            if(t.price == price) {
-                return t;
-            }
-        }
-        return undefined;
-    }
 
 }
 
