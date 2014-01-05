@@ -1,16 +1,24 @@
 library("RMongo")
+library("zoo")
 
 args <- commandArgs(trailingOnly=T)
 
 print(args)
 
-db <- mongoDbConnect("grabber")
+readCollection <- function(collectionName, unique=FALSE) {
+  db <- mongoDbConnect("grabber")
+  ret <- dbGetQuery(db, collection=collectionName, '{}')
+  ret <- ret[, !(names(ret) %in% c('X_id', 'machineTime'))]
+  if(unique) {
+    ret <- unique(ret)
+  }
+  ret.z <- zoo(ret, as.POSIXct(ret[,'timestamp'], origin="1970-01-01"))
+  return(ret);
+  dbDisconnect(db)
+} 
 
-# output <- dbAggregate(db, collection="bitstamp_ticker", '{"$group" : { "_id" : "$timestamp", "high": { "$last" : "$high"}, "last": { "$last" : "$last"},  "bid": { "$last" : "$bid"}, "volume": { "$last" : "$volume"}, "low": { "$last" : "$low"}, "ask": { "$last" : "$ask"} }}')
+ticker <- readCollection('devtest_tickerResult', T);
+depth <- readCollection('devtest_depthResult');
 
-output <- dbGetQuery(db, collection='bitstamp_ticker', '{}')
-
-output <- output[, !(names(output) %in% c('X_id', 'machineTime'))]
-output <- unique(output)
-
-dbDisconnect(db)
+# calculate start and end end of the series
+start(dept)

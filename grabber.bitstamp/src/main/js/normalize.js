@@ -96,7 +96,7 @@ function processTransactionAndDepth() {
     while(obCursor.hasNext()) {
         current = obCursor.next();
         if(typeof(previous) !== 'undefined') {
-            transactions = findTransactionsInInterval(previous.timestamp, current.timestamp);
+            transactions = findTransactionsInInterval(parseInt(previous.timestamp), parseInt(current.timestamp));
             var com = compare(decomposeOrderBook(previous), decomposeOrderBook(current), decomposeTransactions(transactions));
             if(com) {
                 for(i = 0; i < com.length; i++) {
@@ -109,46 +109,6 @@ function processTransactionAndDepth() {
     }
 
     print(counter + ' oreder book operations');
-}
-
-function compareBooks(before, after) {
-    var ret = {
-        bids_added: [],
-        bids_removed: [],
-        asks_added: [],
-        asks_removed: []
-    };
-
-
-}
-
-function compareArrays(before, after){
-    var bi = 0;
-    var ai = 0;
-
-    var ret = {
-        added: [],
-        removed: []
-    };
-
-    var b = undefined;
-    var a = undefined;
-
-    while(bi < before.length || ai < after.length) {
-        b = before[bi];
-        a = after[ai];
-
-        if(b.price < a.price) {
-
-        } else if(b.price > a.price) {
-
-        } else {
-
-        }
-
-
-    }
-
 }
 
 function normalizeTransaction(row) {
@@ -277,11 +237,13 @@ function findTransactionsInInterval(t1, t2) {
             {timestamp: {$lt : t2}}
         ]
     }).sort({tid: 1});
+
     var ret = [];
 
     while(cursor.hasNext()) {
         ret.push(cursor.next());
     }
+
     return ret;
 }
 
@@ -297,7 +259,7 @@ function getCollectionName(name) {
 // ORDER BOOK COMPARISON ALGORITHM
 function compare(before, after, ts) {
     if(before.timestamp == after.timestamp) {
-        return;
+        return undefined;
     }
 
     var price;
